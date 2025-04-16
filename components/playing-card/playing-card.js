@@ -18,7 +18,18 @@ class PlayingCard extends HTMLElement {
     `;
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
-    // Add flip toggle
+    const cardId = this.getAttribute('card-id') || 'AS';
+    const imgEl = this.shadowRoot.querySelector('.card-front .card-img');
+    if (imgEl) {
+      imgEl.src = `/assets/cards/${cardId}.png`;
+      imgEl.alt = `Playing card ${cardId}`;
+    }
+
+    //Click to flip
+    const card = this.shadowRoot.querySelector('.card');
+    card.addEventListener('click', () => {
+      card.classList.toggle('flipped');
+    });
    
   }
 }
