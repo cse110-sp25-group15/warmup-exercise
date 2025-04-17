@@ -7,8 +7,8 @@ class Label extends HTMLElement {
   async connectedCallback() {
     // Load HTML & CSS templates
     const [html, css] = await Promise.all([
-      fetch('./components/label/label.html').then(r => r.text()),
-      fetch('./components/label/label.css').then(r => r.text())
+      fetch('./components/label/custom-label.html').then(r => r.text()),
+      fetch('./components/label/custom-label.css').then(r => r.text())
     ]);
 
     const template = document.createElement('template');
@@ -23,4 +23,4 @@ class Label extends HTMLElement {
   }
 }
 
-customElements.define('label', Label);
+customElements.define('custom-label', Label);
