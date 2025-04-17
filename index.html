@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Card Game</title>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="./assets/globals.css" />
 
-    <link rel="icon" href="favicon.png" />
-    <script
-      type="module"
-      src="./components/playing-card/playing-card.js"
-    ></script>
-    <script type="module" src="./components/card-deck/card-deck.js"></script>
-    <script type="module" src="./components/custom-button/custom-button.js"></script>
-  
-  </head>
+<head>
+  <title>Card Game</title>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="./assets/globals.css" />
 
-  <body>
-    <h1>Card Game</h1>
+  <link rel="icon" href="favicon.png" />
+  <script type="module" src="./components/playing-card/playing-card.js"></script>
+  <script type="module" src="./components/card-deck/card-deck.js"></script>
+  <script type="module" src="./components/custom-button/custom-button.js"></script>
+  <script type="module" src="./components/custom-label/custom-label.js"></script>
 
-    <h1>Sample Playing Cards</h1>
-    <playing-card card-id="QH"></playing-card>
+</head>
 
-    <h1>Sample Card Deck</h1>
-    <card-deck></card-deck>
+<body>
+  <h1>Card Game</h1>
 
-    <h1>Sample custom-button component</h1>
-    <div style="display: flex; flex-direction: column; gap: 10px; width: 160px; padding: 20px; background-color: #2e3a59; border-radius: 12px;">
+  <h1>Sample Playing Cards</h1>
+  <playing-card card-id="QH"></playing-card>
+
+  <h1>Sample Card Deck</h1>
+  <card-deck></card-deck>
+
+  <h1>Sample custom-button component</h1>
+  <div
+    style="display: flex; flex-direction: column; gap: 10px; width: 160px; padding: 20px; background-color: #2e3a59; border-radius: 12px;">
     <custom-button>HIT</custom-button>
     <custom-button>STAY</custom-button>
   </div>
-    <h1> Sample label</h1>
-    <label for="name">Name:</label>
 
-  </body>
+  <h1> Sample label</h1>
+  <custom-label>
+    Hello world!
+  </custom-label>
+
+
+</body>
+
 </html>
