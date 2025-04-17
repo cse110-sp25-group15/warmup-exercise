@@ -1,6 +1,10 @@
 .card-deck {
     width: 100px;
     height: 140px;
-    cursor: pointer;
     background-color: aliceblue;
+}
+
+.card-deck:hover{
+    cursor: url('../../assets/cursors/cursor.png'), pointer;
+      
 }

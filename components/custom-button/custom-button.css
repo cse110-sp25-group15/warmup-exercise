@@ -1,6 +1,33 @@
-.custom-button {
-  width: 100px;
-  height: 140px;
-  cursor: pointer;
-  background-color: aliceblue;
+button.custom-button {
+  display: inline-block;
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #2e3a59;
+  color: white;
+  font-size: 1rem;
+  font-family: inherit;
+  border: 2px solid white;
+  border-radius: 8px;
+  text-align: center;
+  transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+button.custom-button:hover {
+  background-color: #3f4f78;
+  transform: scale(1.02);
+  cursor: url('../../assets/cursors/cursor.png'), pointer;
+    
+}
+
+
+.custom-button:active {
+  transform: scale(0.97);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.custom-button.disabled {
+  opacity: 0.5;
+  background-color: #7f8aa3; /* muted gray-blue */
+  pointer-events: none;
 }

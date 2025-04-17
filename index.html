@@ -3,12 +3,16 @@
   <head>
     <title>Card Game</title>
     <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./assets/globals.css" />
+
     <link rel="icon" href="favicon.png" />
     <script
       type="module"
       src="./components/playing-card/playing-card.js"
     ></script>
     <script type="module" src="./components/card-deck/card-deck.js"></script>
+    <script type="module" src="./components/custom-button/custom-button.js"></script>
+  
   </head>
 
   <body>
@@ -21,8 +25,10 @@
     <card-deck></card-deck>
 
     <h1>Sample custom-button component</h1>
-    <custom-button>Click Me!</custom-button>
-
+    <div style="display: flex; flex-direction: column; gap: 10px; width: 160px; padding: 20px; background-color: #2e3a59; border-radius: 12px;">
+    <custom-button>HIT</custom-button>
+    <custom-button>STAY</custom-button>
+  </div>
     <h1> Sample label</h1>
     <label for="name">Name:</label>
 
