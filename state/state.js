@@ -6,6 +6,7 @@ let deckState = {
 };
 
 
+
 // DECK INITIALIZATION
 // Each card is represented as a dictionary with { suit, value, id }.
 
@@ -15,7 +16,10 @@ let deckState = {
  * Saves the updated state to localStorage.
  */
 export function initDeck() {
-  // TODO
+  createStandardDeck();
+  deckState.discardPile = []; // Clear discard pile
+  saveDeck(); // Save the updated state
+  
 }
 
 /**
@@ -27,9 +31,6 @@ export function initDeck() {
 export function createStandardDeck() {
   // TODO
 }
-
-
-// SHUFFLING
 
 
 /**

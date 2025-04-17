@@ -1,7 +1,9 @@
 class PlayingCard extends HTMLElement {
   constructor() {
     super();
+
     this.attachShadow({ mode: 'open' });
+
   }
 
   async connectedCallback() {
@@ -16,6 +18,7 @@ class PlayingCard extends HTMLElement {
       <style>${css}</style>
       ${html}
     `;
+    
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     const cardId = this.getAttribute('card-id') || 'AS';
@@ -32,6 +35,7 @@ class PlayingCard extends HTMLElement {
     });
    
   }
+  
 }
 
 customElements.define('playing-card', PlayingCard);
