@@ -24,7 +24,6 @@ class Label extends HTMLElement {
       ${html}
     `;
 
-    console.log(template.innerHTML)
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     
