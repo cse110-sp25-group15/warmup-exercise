@@ -19,6 +19,19 @@ class CardDeck extends HTMLElement {
       this.shadowRoot.appendChild(template.content.cloneNode(true));
   
       // Add flip toggle
+      const deckEl = this.shadowRoot.querySelector('#deck');
+
+      deckEl.addEventListener('click', () => {
+        deckEl.classList.remove('shuffling');
+        void deckEl.offsetWidth;
+
+        deckEl.classList.add('shuffling');
+
+
+        deckEl.addEventListener('animationend', () => {
+          deckEl.classList.remove('shuffling');
+        }, {once: true });
+      });
      
     }
   }
