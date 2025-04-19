@@ -1,7 +1,7 @@
 .deck {
     position: relative;
     width: 100px;
-    height: 140px;
+    height: 145px;
     cursor: pointer;
     overflow: visible;
     border-radius: 8px;
@@ -59,16 +59,5 @@
     0%, 100% { transform: translateY(4px) rotate(-1deg); }
     50% { transform: translateY(-5px) rotate(-3deg); }
 }
-
-
-
-
-/* media queries for responsiveness*/
-@media (min-width: 1200px) {
-    .deck {
-      width: 135px;
-      height: 195px;
-    }
-  }
 
 

@@ -44,18 +44,3 @@
   padding: 10px 15px;
 }
 
-/* media queries for responsiveness */
-@media (min-width: 1200px) {
-  .custom-label {
-    font-size: 1.2rem;
-  }
-  
-  #player-score,
-  #dealer-score {
-    font-size: 1.3rem;
-  }
-  
-  #message-display {
-    font-size: 1.25rem;
-  }
-}

@@ -32,11 +32,3 @@
   background-color: #7f8aa3; /* muted gray-blue */
   pointer-events: none;
 }
-
-
-/* media queries for responsiveness*/
-@media (min-width: 1200px) {
-  .custom-button {
-    font-size: 1.35rem;
-  }
-}
