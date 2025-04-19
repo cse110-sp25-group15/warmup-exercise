@@ -1,7 +1,13 @@
+img {
+    pointer-events: none;
+}
+
 .card {
+    display: inline-block;
     width: 100px;
     height: 145px;
     perspective: 1000px;
+    user-select: none;
 }
 .card:hover{
     cursor: url('../../assets/cursors/cursor.png'), pointer;
