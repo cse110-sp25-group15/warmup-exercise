@@ -48,7 +48,7 @@ class PlayingCard extends HTMLElement {
     const cardId = this.getAttribute('card-id') || 'AS';
     const imgEl = this.shadowRoot.querySelector('.card-front .card-img');
     if (imgEl) {
-      imgEl.src = `/assets/cards/full_cards/${cardId}.png`;
+      imgEl.src = `/assets/cards/full-cards/${cardId}.png`;
       imgEl.alt = `Playing card ${cardId}`;
     }
   }
