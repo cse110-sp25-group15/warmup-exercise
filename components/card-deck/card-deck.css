@@ -63,6 +63,12 @@
 
 
 
-
+/* media queries for responsiveness*/
+@media (min-width: 1200px) {
+    .deck {
+      width: 135px;
+      height: 195px;
+    }
+  }
 
 

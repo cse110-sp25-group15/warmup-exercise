@@ -7,6 +7,8 @@
 
 body {
   background-color: #303b49;
+  display: flex;
+  justify-content: center;
 }
 
 
@@ -21,7 +23,7 @@ body {
   max-width: 1200px;
   min-height: 650px;
   max-height: 1300px;
-  overflow: scroll;
+  
 }
 
 .deck-container {
@@ -74,7 +76,6 @@ body {
   justify-content: center;
   align-items: center;
   position: relative;
-  overflow-x: scroll;
 }
 .stats-label {
   position: absolute;
@@ -87,4 +88,11 @@ body {
 }
 .controls custom-button {
   margin: 10px;
+}
+
+
+@media (min-width: 1200px) {
+  .game-container {
+    min-height: 800px;
+  }
 }
