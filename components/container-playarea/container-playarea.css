@@ -1,0 +1,27 @@
+/* .container-playarea {
+  width: 100px;
+  height: 140px;
+  cursor: pointer;
+  background-color: aliceblue;
+} */
+
+.container-playarea {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  border: 7px dashed #21252e;
+  border-radius: 10px;
+  overflow-x: scroll;
+  max-width: 400px;
+}
+
+
+.container-playarea > playing-card {
+  margin: 10px;
+}
+
+@media (min-width: 1200px) {
+  .container-playarea {
+    max-width: 500px;
+  }
+}
