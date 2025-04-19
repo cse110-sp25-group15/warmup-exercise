@@ -382,14 +382,13 @@ function addCardToContainerWithAnimation(container, cardId, faceDown = false) {
 
   const containerRect = container.getBoundingClientRect();
   const existingCards = container.querySelectorAll('playing-card').length;
-  const cardWidth = 100; 
-  const cardHeight = 145;
+  const cardWidth = 150; 
   const margin = 10;
   const cardSpacing = cardWidth + margin * 2;
   const initialX = containerRect.left + 6.66
   const targetPosition = {
     x: initialX + (existingCards * cardSpacing) + margin,
-    y: containerRect.top + (containerRect.height / 2) - 145/2
+    y: containerRect.top + (containerRect.height / 2) - 218/2
   };
 
   let animationCompleted = false;
