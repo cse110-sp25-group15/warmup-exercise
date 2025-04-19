@@ -11,43 +11,60 @@
   <script type="module" src="./components/card-deck/card-deck.js"></script>
   <script type="module" src="./components/custom-button/custom-button.js"></script>
   <script type="module" src="./components/custom-label/custom-label.js"></script>
-  <script type="module" src="./components/container-playarea/container-playarea.js"></script>
-  <script type="module" src="./components/container-player/container-player.js"></script>
-
+  <script src="./state/state.js"></script>
 </head>
 
 <body>
-
   <div class="game-container">
     <div class="deck-container">
       <div class="deck-outline">
-        <card-deck>
+        <card-deck id="main-deck">
       </div>
     </div>
 
     <div class="play-area-container">
       <div class="dealer-area">
-        <container-player label1="DEALER" playing-cards="back_09,CA" label2="11"></container-player>
+        <custom-label id="dealer-label">DEALER</custom-label>
+        <div class="playarea" id="dealer-cards">
+          <!-- Cards will be added by JavaScript -->
+        </div>
+        <custom-label id="dealer-score">0</custom-label>
       </div>
 
       <div class="player-area">
-        <container-player label1="14" playing-cards="HK,S4" label2="PLAYER"></container-player>
+        <custom-label id="player-score">0</custom-label>
+        <div class="playarea" id="player-cards">
+          <!-- Cards will be added by JavaScript -->
+        </div>
+        <custom-label id="player-label">PLAYER</custom-label>
       </div>
-
     </div>
-
 
     <div class="controls-container">
-      <custom-label class="stats-label">WIN/LOSS</custom-label>
+      <custom-label class="stats-label" id="message-display">Press DEAL to start</custom-label>
       <div class="controls">
-        <custom-button class="buttons">HIT</custom-button>
-        <custom-button>STAY</custom-button>
-        <custom-button disabled>DISABLED</custom-button>
+        <custom-button hit>HIT</custom-button>
+        <custom-button stay>STAY</custom-button>
+        <custom-button deal>DEAL</custom-button>
       </div>
     </div>
-
   </div>
-
+  
+  <script>
+    // Initialize game when DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      // Get DOM elements
+      const playerCards = document.getElementById('player-cards');
+      const dealerCards = document.getElementById('dealer-cards');
+      const playerScore = document.getElementById('player-score');
+      const dealerScore = document.getElementById('dealer-score');
+      const messageDisplay = document.getElementById('message-display');
+      
+      // Initialize the game
+      initializeGame(playerCards, dealerCards, playerScore, dealerScore, messageDisplay);
+      setupGameEventListeners();
+    });
+  </script>
 </body>
 
 </html>

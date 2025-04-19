@@ -5,7 +5,7 @@ class CustomButton extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['disabled', 'hit', 'stay'];
+    return ['disabled', 'hit', 'stay', 'deal'];
   }
 
   async connectedCallback() {
@@ -22,20 +22,19 @@ class CustomButton extends HTMLElement {
     `;
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
-    // Add create new event for mouse click to bubble up
-
     const button = this.shadowRoot.querySelector('.custom-button');
 
     // Check if the disabled attribute is present and update the class accordingly
-    if (this.hasAttribute('disabled')) {
-      button.classList.add('disabled');
-    } else {
-      button.classList.remove('disabled');
-    } 
+    this.updateDisabledState();
 
     // add event listener to button
     button.addEventListener('click', (event) => {
-      if (this.hasAttribute('hit')){
+      // Don't dispatch events if button is disabled
+      if (this.hasAttribute('disabled')) {
+        return;
+      }
+      
+      if (this.hasAttribute('hit')) {
         // create new event
         const hitEvent = new CustomEvent('hit', {
           bubbles: true,
@@ -43,7 +42,7 @@ class CustomButton extends HTMLElement {
         });
         this.dispatchEvent(hitEvent);
       }
-      if (this.hasAttribute('stay')){
+      if (this.hasAttribute('stay')) {
         // create new event
         const stayEvent = new CustomEvent('stay', {
           bubbles: true,
@@ -51,22 +50,36 @@ class CustomButton extends HTMLElement {
         });
         this.dispatchEvent(stayEvent);
       }
-    })
+      if (this.hasAttribute('deal')) {
+        // create new event
+        const dealEvent = new CustomEvent('deal', {
+          bubbles: true,
+          composed: true,
+        });
+        this.dispatchEvent(dealEvent);
+      }
+    });
   }
 
-
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'disabled') {
-      const button = this.shadowRoot.querySelector('.custom-button');
-      if (newValue !== null) {
-        button.setAttribute('disabled', '');
-      } else {
-        button.removeAttribute('disabled');
-      }
+  // Helper method to update the disabled state
+  updateDisabledState() {
+    const button = this.shadowRoot?.querySelector('.custom-button');
+    if (!button) return;
+    
+    if (this.hasAttribute('disabled')) {
+      button.classList.add('disabled');
+      button.setAttribute('disabled', '');
+    } else {
+      button.classList.remove('disabled');
+      button.removeAttribute('disabled');
     }
   }
 
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'disabled') {
+      this.updateDisabledState();
+    }
+  }
 }
 
 customElements.define('custom-button', CustomButton);

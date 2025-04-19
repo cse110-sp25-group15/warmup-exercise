@@ -1,303 +1,481 @@
-// Current functions we have:
-// 1. addRandomCard() - Creates and adds a random card to the page
-// 2. flipEarliestCard() - Finds the first card and toggles its flipped state
+// Game state variables
+let gameState = 'notStarted';
+let playerContainer = null;
+let dealerContainer = null;
+let playerScoreDisplay = null;
+let dealerScoreDisplay = null;
+let messageDisplay = null;
 
-// Additional functions needed for a complete blackjack game:
-
-// Initialize a new game
-function initializeGame() {
-  console.log('Initializing new blackjack game');
-  
-  // Clear any existing cards
-  clearAllCards();
-  
-  // Reset scores
-  resetScores();
-  
-  // Deal initial cards (2 for player, 2 for dealer with one face down)
-  const playerCard1 = dealCardTo('player');
-  const playerCard2 = dealCardTo('player');
-  const dealerCard1 = dealCardTo('dealer');
-  const dealerCard2 = dealCardTo('dealer', true); // Second dealer card is face down
-  
-  // Calculate and display initial scores
-  updateScores();
-  
-  // Set game state to player's turn
-  setGameState('playerTurn');
+function removeCard(cardElement) {
+  if (!cardElement) return false;
+  cardElement.remove();
+  return true;
 }
 
-// Clear all cards from the table
 function clearAllCards() {
-  const cards = document.querySelectorAll('playing-card');
-  cards.forEach(card => card.remove());
-  console.log('Cleared all cards from the table');
+  const playerCards = document.querySelectorAll('#player-cards playing-card');
+  const dealerCards = document.querySelectorAll('#dealer-cards playing-card');
+  const count = playerCards.length + dealerCards.length;
+
+  playerCards.forEach(card => card.remove());
+  dealerCards.forEach(card => card.remove());
+  
+  return count;
 }
 
-// Reset player and dealer scores
-function resetScores() {
-  playerScore = 0;
-  dealerScore = 0;
-  document.querySelector('.player-score').textContent = playerScore;
-  document.querySelector('.dealer-score').textContent = dealerScore;
-  console.log('Reset scores: Player - 0, Dealer - 0');
-}
+function getCardValue(cardId) {
+  if (!cardId || cardId.length < 2) return null;
+  
+  if (cardId.startsWith('back_')) return 0;
 
-// Deal a card to either the player or dealer
-function dealCardTo(recipient, faceDown = false) {
-  console.log(`Dealing card to ${recipient}`);
-  
-  // Create a new card
-  const newCard = document.createElement('playing-card');
-  
-  // Set a random card ID
-  const suits = ['H', 'D', 'C', 'S'];
-  const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-  const randomSuit = suits[Math.floor(Math.random() * suits.length)];
-  const randomValue = values[Math.floor(Math.random() * values.length)];
-  newCard.setAttribute('card-id', `${randomSuit}${randomValue}`);
-  
-  // Set face down state if needed
-  if (faceDown) {
-    newCard.setAttribute('flipped', '');
-  }
-  
-  // Add the card to the appropriate container
-  const container = document.querySelector(`.${recipient}-cards`);
-  container.appendChild(newCard);
-  
-  // Add card to the appropriate hand for score calculation
-  if (recipient === 'player') {
-    playerHand.push({ suit: randomSuit, value: randomValue });
+  const value = cardId.substring(1);
+
+  if (value === 'A') {
+    return 11;
+  } else if (value === 'K' || value === 'Q' || value === 'J') {
+    return 10;
   } else {
-    dealerHand.push({ suit: randomSuit, value: randomValue });
+    return parseInt(value);
   }
-  
-  console.log(`Dealt ${randomSuit}${randomValue} to ${recipient}`);
-  return newCard;
 }
 
-// Calculate the score of a hand
-function calculateHandScore(hand) {
+function flipCard(cardElement) {
+  if (!cardElement) return false;
+
+  const isFlipped = cardElement.hasAttribute('flipped');
+  
+  if (isFlipped) {
+    cardElement.removeAttribute('flipped');
+  } else {
+    cardElement.setAttribute('flipped', '');
+  }
+  
+  if (cardElement.parentElement === playerContainer) {
+    updatePlayerScore();
+  }
+  
+  return true;
+}
+
+function getVisibleCards(cards) {
+  return Array.from(cards).filter(card => !card.hasAttribute('flipped'));
+}
+
+function calculateHandScore(cards) {
+  if (!cards || cards.length === 0) return 0;
+
   let score = 0;
   let aceCount = 0;
-  
-  for (const card of hand) {
-    if (card.value === 'A') {
-      aceCount++;
-      score += 11;
-    } else if (card.value === 'K' || card.value === 'Q' || card.value === 'J') {
-      score += 10;
-    } else {
-      score += parseInt(card.value);
-    }
+
+  for (const card of cards) {
+    const cardId = card.getAttribute('card-id');
+    const value = getCardValue(cardId);
+
+    if (value === 11) aceCount++;
+    score += value;
   }
-  
-  // Adjust score for aces if needed
+
   while (score > 21 && aceCount > 0) {
-    score -= 10; // Change an ace from 11 to 1
+    score -= 10;
     aceCount--;
   }
-  
+
   return score;
 }
 
-// Update displayed scores
-function updateScores() {
-  playerScore = calculateHandScore(playerHand);
+function updatePlayerScore() {
+  if (!playerContainer || !playerScoreDisplay) return;
   
-  // Only calculate visible dealer cards for the display
-  const visibleDealerHand = dealerHand.filter((card, index) => {
-    const cardElement = document.querySelectorAll('.dealer-cards playing-card')[index];
-    return !cardElement.hasAttribute('flipped');
+  const playerCards = playerContainer.querySelectorAll('playing-card');
+  const visiblePlayerCards = getVisibleCards(playerCards);
+  const playerScore = calculateHandScore(visiblePlayerCards);
+  
+  updateScoreDisplay(playerScoreDisplay, playerScore);
+  
+  if (gameState === 'playerTurn' && playerScore > 21) {
+    updateMessage("Bust! Dealer wins.");
+    setGameState('gameOver');
+  }
+  
+  return playerScore;
+}
+
+function updateScoreDisplay(displayElement, score) {
+  if (!displayElement) return false;
+
+  displayElement.textContent = score;
+  return true;
+}
+
+function isBust(cards) {
+  const score = calculateHandScore(cards);
+  return score > 21;
+}
+
+function isBlackjack(cards) {
+  if (cards.length !== 2) return false;
+
+  const originalFlippedState = Array.from(cards).map(card => card.hasAttribute('flipped'));
+  
+  cards.forEach(card => {
+    if (!card.hasAttribute('flipped')) {
+      card.setAttribute('flipped', '');
+    }
   });
   
-  dealerScore = calculateHandScore(visibleDealerHand);
-  
-  document.querySelector('.player-score').textContent = playerScore;
-  document.querySelector('.dealer-score').textContent = dealerScore;
-  
-  console.log(`Updated scores: Player - ${playerScore}, Dealer - ${dealerScore}`);
-}
-
-// Handle hit action
-function handleHit() {
-  console.log('Player hits');
-  
-  if (gameState !== 'playerTurn') {
-    console.log('Cannot hit - not player\'s turn');
-    return;
-  }
-  
-  // Deal a card to the player
-  dealCardTo('player');
-  
-  // Update scores
-  updateScores();
-  
-  // Check if player busts
-  if (playerScore > 21) {
-    console.log('Player busts!');
-    endGame('dealerWin');
-  }
-}
-
-// Handle stay action
-function handleStay() {
-  console.log('Player stays');
-  
-  if (gameState !== 'playerTurn') {
-    console.log('Cannot stay - not player\'s turn');
-    return;
-  }
-  
-  // Flip dealer's face-down card
-  const dealerCards = document.querySelectorAll('.dealer-cards playing-card');
-  for (const card of dealerCards) {
-    if (card.hasAttribute('flipped')) {
+  const score = calculateHandScore(cards);  
+  cards.forEach((card, index) => {
+    if (!originalFlippedState[index]) {
       card.removeAttribute('flipped');
+    }
+  });
+  
+  return score === 21;
+}
+
+function initializeGame(playerArea, dealerArea, playerScore, dealerScore, messageArea) {
+  playerContainer = playerArea;
+  dealerContainer = dealerArea;
+  playerScoreDisplay = playerScore;
+  dealerScoreDisplay = dealerScore;
+  messageDisplay = messageArea;
+
+  clearAllCards();
+  updateScoreDisplay(playerScoreDisplay, 0);
+  updateScoreDisplay(dealerScoreDisplay, 0);
+  updateMessage('Welcome to Blackjack! Press "DEAL" to start.');
+
+  setGameState('notStarted');
+
+  setupPlayerCardFlipping();
+}
+
+function setupPlayerCardFlipping() {
+  playerContainer.addEventListener('flipped', () => {
+    if (gameState === 'playerTurn') {
+      updatePlayerScore();
+    }
+  });
+}
+
+function updateMessage(message) {
+  if (messageDisplay) {
+    messageDisplay.textContent = message;
+  }
+}
+
+function setGameState(state) {
+  gameState = state;
+
+  const hitButton = document.querySelector('custom-button[hit]');
+  const stayButton = document.querySelector('custom-button[stay]');
+  const dealButton = document.querySelector('custom-button[deal]');
+
+  if (state === 'notStarted' || state === 'gameOver') {
+    hitButton.setAttribute('disabled', '');
+    stayButton.setAttribute('disabled', '');
+    dealButton.removeAttribute('disabled');
+  } else if (state === 'playerTurn') {
+    hitButton.removeAttribute('disabled');
+    stayButton.removeAttribute('disabled');
+    dealButton.setAttribute('disabled', '');
+  } else if (state === 'dealerTurn') {
+    hitButton.setAttribute('disabled', '');
+    stayButton.setAttribute('disabled', '');
+    dealButton.setAttribute('disabled', '');
+  }
+
+  return gameState;
+}
+
+function handlePlayerHit() {
+  if (gameState !== 'playerTurn') return false;
+  dealRandomCardToWithAnimation(playerContainer, true);
+  return true;
+}
+
+function handlePlayerStay() {
+  if (gameState !== 'playerTurn') return false;
+
+  revealPlayerCards();
+  setGameState('dealerTurn');
+  updateMessage("Dealer's turn");
+  revealDealerCards();
+  executeDealerTurn();
+
+  return true;
+}
+
+function revealPlayerCards() {
+  const playerCards = playerContainer.querySelectorAll('playing-card');
+  let flippedCount = 0;
+  
+  for (const card of playerCards) {
+    if (card.hasAttribute('flipped')) {
+      flipCard(card);
+      flippedCount++;
     }
   }
   
-  // Update scores with all dealer cards visible
-  updateScores();
-  
-  // Now it's dealer's turn
-  dealerTurn();
+  updatePlayerScore();
+  return flippedCount;
 }
 
-// Handle dealer's turn
-function dealerTurn() {
-  console.log('Dealer\'s turn');
-  setGameState('dealerTurn');
+function revealDealerCards() {
+  const dealerCards = dealerContainer.querySelectorAll('playing-card');
+  let flippedCount = 0;
   
-  // Calculate dealer's actual score with all cards
-  const realDealerScore = calculateHandScore(dealerHand);
-  
-  // Dealer hits on 16 or less, stays on 17 or more
-  const dealerDecision = () => {
-    if (realDealerScore < 17) {
-      // Dealer takes a card
-      dealCardTo('dealer');
-      
-      // Update scores
-      updateScores();
-      
-      // Recalculate full dealer score
-      const newRealDealerScore = calculateHandScore(dealerHand);
-      
-      // Check if dealer busts
-      if (newRealDealerScore > 21) {
-        console.log('Dealer busts!');
-        endGame('playerWin');
-        return;
+  for (const card of dealerCards) {
+    if (card.hasAttribute('flipped')) {
+      flipCard(card);
+      flippedCount++;
+    }
+  }
+
+  const dealerScore = calculateHandScore(dealerContainer.querySelectorAll('playing-card'));
+  updateScoreDisplay(dealerScoreDisplay, dealerScore);
+
+  return dealerScore;
+}
+
+function executeDealerTurn() {
+  if (gameState !== 'dealerTurn') return false;
+
+  const dealerNextMove = () => {
+    const dealerScore = calculateHandScore(dealerContainer.querySelectorAll('playing-card'));
+
+    if (dealerScore < 17) {
+      updateMessage("Dealer hits");
+      dealRandomCardToWithAnimation(dealerContainer);
+
+      const newScore = calculateHandScore(dealerContainer.querySelectorAll('playing-card'));
+      updateScoreDisplay(dealerScoreDisplay, newScore);
+
+      if (newScore > 21) {
+        updateMessage("Dealer busts! You win!");
+        setGameState('gameOver');
+      } else {
+        setTimeout(dealerNextMove, 1000);
       }
-      
-      // Continue dealer turn with a slight delay
-      setTimeout(dealerDecision, 1000);
     } else {
-      // Dealer stays, determine winner
       determineWinner();
     }
   };
-  
-  // Start dealer decision process with a delay
-  setTimeout(dealerDecision, 1000);
+
+  setTimeout(dealerNextMove, 1000);
+  return true;
 }
 
-// Determine the winner
 function determineWinner() {
-  const realDealerScore = calculateHandScore(dealerHand);
+  const playerCards = playerContainer.querySelectorAll('playing-card');
+  const dealerCards = dealerContainer.querySelectorAll('playing-card');
   
-  console.log(`Final scores: Player - ${playerScore}, Dealer - ${realDealerScore}`);
-  
-  if (playerScore > realDealerScore) {
-    console.log('Player wins!');
-    endGame('playerWin');
-  } else if (realDealerScore > playerScore) {
-    console.log('Dealer wins!');
-    endGame('dealerWin');
+  revealPlayerCards();
+
+  const playerScore = calculateHandScore(playerCards);
+  const dealerScore = calculateHandScore(dealerCards);
+
+  updateScoreDisplay(playerScoreDisplay, playerScore);
+  updateScoreDisplay(dealerScoreDisplay, dealerScore);
+
+  if (playerScore > 21) {
+    updateMessage("Bust! Dealer wins.");
+  } else if (dealerScore > 21) {
+    updateMessage("Dealer busts! You win!");
+  } else if (playerScore > dealerScore) {
+    updateMessage("You win!");
+  } else if (dealerScore > playerScore) {
+    updateMessage("Dealer wins.");
   } else {
-    console.log('It\'s a tie!');
-    endGame('tie');
+    updateMessage("Push - it's a tie!");
   }
-}
 
-// End the game with a result
-function endGame(result) {
   setGameState('gameOver');
-  
-  // Display result message
-  const resultMessage = document.querySelector('.result-message');
-  
-  switch (result) {
-    case 'playerWin':
-      resultMessage.textContent = 'You win!';
-      break;
-    case 'dealerWin':
-      resultMessage.textContent = 'Dealer wins!';
-      break;
-    case 'tie':
-      resultMessage.textContent = 'It\'s a tie!';
-      break;
-  }
-  
-  // Show play again button
-  document.querySelector('.play-again-button').style.display = 'block';
+
+  return {
+    playerScore,
+    dealerScore,
+    winner: playerScore > dealerScore ? 'player' :
+      dealerScore > playerScore ? 'dealer' : 'push'
+  };
 }
 
-// Set the current game state
-function setGameState(state) {
-  gameState = state;
-  console.log(`Game state changed to: ${state}`);
+async function startNewRound() {
+  updateScoreDisplay(playerScoreDisplay, 0);
+  updateScoreDisplay(dealerScoreDisplay, 0);
+  setGameState('dealerTurn');
+
+  await dealInitialCardsWithAnimation(playerContainer, dealerContainer);
+
+  const dealerCards = dealerContainer.querySelectorAll('playing-card');
+  const visibleDealerCards = getVisibleCards(dealerCards);
   
-  // Update UI based on game state
-  const hitButton = document.querySelector('custom-button[hit]');
-  const stayButton = document.querySelector('custom-button[stay]');
-  
-  switch (state) {
-    case 'playerTurn':
-      hitButton.removeAttribute('disabled');
-      stayButton.removeAttribute('disabled');
-      break;
-    case 'dealerTurn':
-    case 'gameOver':
-      hitButton.setAttribute('disabled', '');
-      stayButton.setAttribute('disabled', '');
-      break;
-  }
+  const dealerScore = calculateHandScore(visibleDealerCards);
+  updateScoreDisplay(dealerScoreDisplay, dealerScore);
+
+  updateMessage("Your turn - Click cards to flip them, then Hit or Stay");
+  setGameState('playerTurn');
+
+  return gameState;
 }
 
-// Remove a specific card (useful for animations or special rules)
-function removeCard(cardElement) {
-  console.log('Removing card:', cardElement.getAttribute('card-id'));
-  cardElement.remove();
-}
-
-// Initialize game state and hands
-let gameState = 'notStarted';
-let playerHand = [];
-let dealerHand = [];
-let playerScore = 0;
-let dealerScore = 0;
-
-// Set up event listeners for game actions
-document.addEventListener('DOMContentLoaded', () => {
-  // Hit button event
+function setupGameEventListeners() {
   document.addEventListener('hit', () => {
-    handleHit();
+    handlePlayerHit();
   });
-  
-  // Stay button event
+
   document.addEventListener('stay', () => {
-    handleStay();
+    handlePlayerStay();
   });
-  
-  // Play again button event
-  document.querySelector('.play-again-button').addEventListener('click', () => {
-    initializeGame();
+
+  document.addEventListener('deal', () => {
+    startNewRound();
   });
+}
+
+function getElementPosition(element) {
+  const rect = element.getBoundingClientRect();
+  return {
+    x: rect.left + window.scrollX,
+    y: rect.top + window.scrollY
+  };
+}
+
+function createAnimatedCard(cardId, sourcePosition, targetPosition, onComplete) {
+  const animatedCard = document.createElement('playing-card');
+  animatedCard.setAttribute('card-id', cardId);
+  animatedCard.classList.add('animated-card');
   
-  // Start the game
-  initializeGame();
+  animatedCard.setAttribute('flipped', '');
+  
+  animatedCard.style.position = 'absolute';
+  animatedCard.style.left = `${sourcePosition.x}px`;
+  animatedCard.style.top = `${sourcePosition.y}px`;
+  animatedCard.style.zIndex = '1000';
+  animatedCard.style.transition = 'all 0.5s ease-out';
+
+  document.body.appendChild(animatedCard);
+
+  void animatedCard.offsetWidth;
+
+  animatedCard.style.left = `${targetPosition.x}px`;
+  animatedCard.style.top = `${targetPosition.y}px`;
+
+  let callbackExecuted = false;
+
+  animatedCard.addEventListener('transitionend', () => {
+    if (callbackExecuted) return;
+    callbackExecuted = true;
+
+    animatedCard.remove();
+    if (onComplete) onComplete();
+  });
+
+  return animatedCard;
+}
+
+function addCardToContainerWithAnimation(container, cardId, faceDown = false) {
+  if (!container) return null;
+
+  const deck = document.querySelector('#main-deck');
+  const sourcePosition = getElementPosition(deck);
+
+  const containerRect = container.getBoundingClientRect();
+  const existingCards = container.querySelectorAll('playing-card').length;
+  const cardWidth = 100; 
+  const cardHeight = 145;
+  const margin = 10;
+  const cardSpacing = cardWidth + margin * 2;
+  const initialX = containerRect.left + 6.66
+  const targetPosition = {
+    x: initialX + (existingCards * cardSpacing) + margin,
+    y: containerRect.top + (containerRect.height / 2) - 145/2
+  };
+
+  let animationCompleted = false;
+
+  createAnimatedCard(cardId, sourcePosition, targetPosition, () => {
+    if (animationCompleted) return;
+    animationCompleted = true;
+
+    const newCard = document.createElement('playing-card');
+    newCard.setAttribute('card-id', cardId);
+    
+    if (faceDown) {
+      newCard.setAttribute('flipped', '');
+    }
+    
+    container.appendChild(newCard);
+
+    if (container === dealerContainer && !faceDown) {
+      updateScoreDisplay(dealerScoreDisplay, calculateHandScore(getVisibleCards(dealerContainer.querySelectorAll('playing-card'))));
+    }
+  });
+
+  return new Promise(resolve => {
+    setTimeout(() => {
+      if (!animationCompleted) {
+        animationCompleted = true;
+      }
+      resolve(container.lastElementChild);
+    }, 600);
+  });
+}
+
+function dealRandomCardToWithAnimation(container, faceDown = false) {
+  const suits = ['H', 'D', 'C', 'S'];
+  const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+  const randomSuit = suits[Math.floor(Math.random() * suits.length)];
+  const randomValue = values[Math.floor(Math.random() * values.length)];
+  const cardId = `${randomSuit}${randomValue}`;
+
+  return addCardToContainerWithAnimation(container, cardId, faceDown);
+}
+
+async function dealInitialCardsWithAnimation(playerContainer, dealerContainer) {
+  clearAllCards();
+
+  try {
+    const playerCard1 = await dealRandomCardToWithAnimation(playerContainer, true);
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    const playerCard2 = await dealRandomCardToWithAnimation(playerContainer, true);
+
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const dealerCard1 = await dealRandomCardToWithAnimation(dealerContainer, false);
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const dealerCard2 = await dealRandomCardToWithAnimation(dealerContainer, true);
+
+    updateMessage("Your turn - Click cards to flip them, then Hit or Stay");
+
+    return {
+      player: [playerCard1, playerCard2],
+      dealer: [dealerCard1, dealerCard2]
+    };
+  } catch (error) {
+    return {
+      player: [],
+      dealer: []
+    };
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const playerArea = document.querySelector('#player-cards');
+  const dealerArea = document.querySelector('#dealer-cards');
+  const playerScore = document.querySelector('#player-score');
+  const dealerScore = document.querySelector('#dealer-score');
+  const messageArea = document.querySelector('#message');
+  
+  if (playerArea && dealerArea && playerScore && dealerScore && messageArea) {
+    initializeGame(playerArea, dealerArea, playerScore, dealerScore, messageArea);
+    setupGameEventListeners();
+  }
+  
+  const originalSetGameState = setGameState;
+  setGameState = function(state) {
+    document.body.setAttribute('data-game-state', state);
+    return originalSetGameState(state);
+  };
 });
