@@ -11,35 +11,42 @@
   <script type="module" src="./components/card-deck/card-deck.js"></script>
   <script type="module" src="./components/custom-button/custom-button.js"></script>
   <script type="module" src="./components/custom-label/custom-label.js"></script>
+  <script type="module" src="./components/container-playarea/container-playarea.js"></script>
+  <script type="module" src="./components/container-player/container-player.js"></script>
 
 </head>
 
 <body>
-  <h1>Card Game</h1>
 
-  <h1>Sample Playing Cards</h1>
-  <playing-card card-id="H8"></playing-card>
+  <div class="game-container">
+    <div class="deck-container">
+      <div class="deck-outline">
+        <card-deck>
+      </div>
+    </div>
 
-  <h1>Sample Card Deck</h1>
-  <card-deck></card-deck>
+    <div class="play-area-container">
+      <div class="dealer-area">
+        <container-player label1="DEALER" playing-cards="back_09,CA" label2="11"></container-player>
+      </div>
 
-  <h1>Sample custom-button component</h1>
-  <div
-    style="display: flex; flex-direction: column; gap: 10px; width: 160px; padding: 20px; background-color: #2e3a59; border-radius: 12px; justify-content: center; align-items: center;">
-    <custom-button hit>HIT</custom-button>
-    <custom-button stay>STAY</custom-button>
-    <!--
-    disabled button
-    -->
-    <custom-button disabled>DISABLED</custom-button>
+      <div class="player-area">
+        <container-player label1="14" playing-cards="HK,S4" label2="PLAYER"></container-player>
+      </div>
+
+    </div>
+
+
+    <div class="controls-container">
+      <custom-label class="stats-label">WIN/LOSS</custom-label>
+      <div class="controls">
+        <custom-button class="buttons">HIT</custom-button>
+        <custom-button>STAY</custom-button>
+        <custom-button disabled>DISABLED</custom-button>
+      </div>
+    </div>
 
   </div>
-
-  <h1> Sample label</h1>
-  <custom-label>
-    Hello world!
-  </custom-label>
-
 
 </body>
 

@@ -1,5 +1,90 @@
 * {
   cursor: url('/assets/cursors/pointer.png'), default;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #303b49;
 }
 
 
+.game-container {
+  background-color: #303b49;
+  height: 100vh;
+  width: 100%;
+  margin: auto;
+  display: flex;
+  justify-content: row;
+  min-width: 900px;
+  max-width: 1200px;
+  min-height: 650px;
+  max-height: 1300px;
+  overflow: scroll;
+}
+
+.deck-container {
+  height: 100%;
+  width: 25%;
+  /* background-color: rgb(193, 169, 30); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.deck-outline {
+  padding: 15px;
+  background-color: #303b49;
+  border: 7px dashed #21252e;
+  border-radius: 10px;
+}
+
+.play-area-container {
+  height: 100%;
+  width: 50%;
+  /* background-color: blueviolet; */
+}
+.dealer-area {
+  height: 50%;
+  /* background-color: aquamarine; */
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.player-area {
+  height: 50%;
+  /* background-color: rgb(136, 8, 211); */
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.controls-container {
+  height: 100%; 
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  /* background-color: brown; */
+  justify-content: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow-x: scroll;
+}
+.stats-label {
+  position: absolute;
+  top: 10px;
+}
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.controls custom-button {
+  margin: 10px;
+}

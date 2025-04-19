@@ -1,0 +1,10 @@
+.container-player {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+}
+.container-player > container-playarea {
+  margin: 20px;
+}
