@@ -4,8 +4,8 @@ img {
 
 .card {
     display: inline-block;
-    width: 150px;
-    height: 218px;
+    width: var(--card-width);
+    height: var(--card-height);
     perspective: 1000px;
     user-select: none;
 }

@@ -15,10 +15,7 @@ let currentBetDisplay = null;
  * @returns {number} - The loaded player money or default value
  */
 function loadPlayerMoney() {
-  const storedMoney = localStorage.getItem('blackjackPlayerMoney');
-  if (storedMoney !== null) {
-    return parseInt(storedMoney);
-  }
+  
   return 1000; // Default starting money
 }
 
@@ -27,15 +24,8 @@ function loadPlayerMoney() {
  * @param {number} amount - The amount to save
  * @returns {boolean} - True if save was successful
  */
-function savePlayerMoney(amount) {
-  try {
-    localStorage.setItem('blackjackPlayerMoney', amount.toString());
-    console.log(`Player money saved to local storage: $${amount}`);
-    return true;
-  } catch (error) {
-    console.error('Failed to save player money to local storage:', error);
-    return false;
-  }
+function savePlayerMoney() {
+  
 }
 
 /**
@@ -418,11 +408,12 @@ function setGameState(state) {
  * Handles player hitting (requesting another card)
  * @returns {boolean} - True if hit was successful
  */
-function handlePlayerHit() {
-  if (gameState !== 'playerTurn') return false;
-  dealRandomCardToWithAnimation(playerContainer, true);
-  return true;
-}
+  async function handlePlayerHit() {
+    if (gameState !== 'playerTurn') return false;
+    await dealRandomCardToWithAnimation(playerContainer, false);
+    return true;
+  }
+
 
 /**
  * Handles player staying (ending their turn)
@@ -732,131 +723,132 @@ function createAnimatedCard(cardId, sourcePosition, targetPosition, onComplete) 
   return animatedCard;
 }
 
-/**
- * Adds a card to a container with animation
- * @param {HTMLElement} container - The container to add the card to
- * @param {string} cardId - The ID of the card to add
- * @param {boolean} faceDown - Whether the card should be face down
- * @returns {Promise<HTMLElement>} - Promise resolving to the added card element
- */
+
+ 
+
+
+
 function addCardToContainerWithAnimation(container, cardId, faceDown = false) {
-  if (!container) return null;
-
-  const deck = document.querySelector('#main-deck');
-  const sourcePosition = getElementPosition(deck);
-
-  const containerRect = container.getBoundingClientRect();
-  const existingCards = container.querySelectorAll('playing-card').length;
-  const cardWidth = 150; 
-  const margin = 10;
-  const cardSpacing = cardWidth + margin * 2;
-  const initialX = containerRect.left + 6.66
-  const targetPosition = {
-    x: initialX + (existingCards * cardSpacing) + margin,
-    y: containerRect.top + (containerRect.height / 2) - 218/2
-  };
-
-  let animationCompleted = false;
-
-  createAnimatedCard(cardId, sourcePosition, targetPosition, () => {
-    if (animationCompleted) return;
-    animationCompleted = true;
-
-    const newCard = document.createElement('playing-card');
-    newCard.setAttribute('card-id', cardId);
-    
-    if (faceDown) {
-      newCard.setAttribute('flipped', '');
-    }
-    
-    container.appendChild(newCard);
-
-    if (container === dealerContainer && !faceDown) {
-      updateScoreDisplay(dealerScoreDisplay, calculateHandScore(getVisibleCards(dealerContainer.querySelectorAll('playing-card'))));
-    }
-  });
-
-  return new Promise(resolve => {
-    setTimeout(() => {
-      if (!animationCompleted) {
-        animationCompleted = true;
+  if (!container) return Promise.reject();
+  
+  return new Promise((resolve) => {
+    const deck = document.querySelector('#main-deck');
+    const sourcePosition = getElementPosition(deck);
+    const containerRect = container.getBoundingClientRect();
+    const existing = container.querySelectorAll('playing-card').length;
+    const cardWidth = 150, margin = 10;
+    const targetPosition = {
+      x: containerRect.left + 6.66 + (existing * (cardWidth + margin * 2)) + margin,
+      y: containerRect.top + (containerRect.height / 2) - 218 / 2
+    };
+  
+    createAnimatedCard(cardId, sourcePosition, targetPosition, () => {
+      const newCard = document.createElement('playing-card');
+      newCard.setAttribute('card-id', cardId);
+      if (faceDown) newCard.setAttribute('flipped', '');
+      container.appendChild(newCard);
+  
+      /* ---- PLAYER AUTO‑SCORE / BUST ---- */
+      if (container === playerContainer) {
+        const score = calculateHandScore(container.querySelectorAll('playing-card'));
+        updateScoreDisplay(playerScoreDisplay, score);
+        if (score > 21 && gameState === 'playerTurn') {
+          updateMessage("Bust! Dealer wins.");
+          playerLoses();
+          setGameState('gameOver');
+        }
       }
-      resolve(container.lastElementChild);
-    }, 600);
-  });
+      /* Dealer visible card score */
+      if (container === dealerContainer && !faceDown) {
+        updateScoreDisplay(
+          dealerScoreDisplay,
+          calculateHandScore(getVisibleCards(dealerContainer.querySelectorAll('playing-card')))
+        );
+      }
+      resolve(newCard);   // <-- now in scope
+    })
+  })
 }
 
-/**
- * Deals a random card to a container with animation
- * @param {HTMLElement} container - The container to deal to
- * @param {boolean} faceDown - Whether the card should be face down
- * @returns {Promise<HTMLElement>} - Promise resolving to the new card element
- */
-function dealRandomCardToWithAnimation(container, faceDown = false) {
-  const suits = ['H', 'D', 'C', 'S'];
-  const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
-  const randomSuit = suits[Math.floor(Math.random() * suits.length)];
-  const randomValue = values[Math.floor(Math.random() * values.length)];
-  const cardId = `${randomSuit}${randomValue}`;
 
-  return addCardToContainerWithAnimation(container, cardId, faceDown);
-}
+  /**
+   * Deals a random card to a container with animation
+   * @param {HTMLElement} container - The container to deal to
+   * @param {boolean} faceDown - Whether the card should be face down
+   * @returns {Promise<HTMLElement>} - Promise resolving to the new card element
+   */
+  function dealRandomCardToWithAnimation(container, faceDown = false) {
+    const suits = ['H', 'D', 'C', 'S'];
+    const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
-/**
- * Deals the initial cards to both player and dealer with animation
- * @param {HTMLElement} playerContainer - The player's card container
- * @param {HTMLElement} dealerContainer - The dealer's card container
- * @returns {Promise<Object>} - Promise resolving to object with player and dealer cards
- */
-async function dealInitialCardsWithAnimation(playerContainer, dealerContainer) {
-  clearAllCards();
+    const randomSuit = suits[Math.floor(Math.random() * suits.length)];
+    const randomValue = values[Math.floor(Math.random() * values.length)];
+    const cardId = `${randomSuit}${randomValue}`;
 
-  try {
-    const playerCard1 = await dealRandomCardToWithAnimation(playerContainer, true);
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    const playerCard2 = await dealRandomCardToWithAnimation(playerContainer, true);
-
-    await new Promise(resolve => setTimeout(resolve, 300));
-    const dealerCard1 = await dealRandomCardToWithAnimation(dealerContainer, false);
-    await new Promise(resolve => setTimeout(resolve, 300));
-    const dealerCard2 = await dealRandomCardToWithAnimation(dealerContainer, true);
-
-    updateMessage("Your turn - Click cards to flip them, then Hit or Stay");
-
-    return {
-      player: [playerCard1, playerCard2],
-      dealer: [dealerCard1, dealerCard2]
-    };
-  } catch (error) {
-    return {
-      player: [],
-      dealer: []
-    };
+    return addCardToContainerWithAnimation(container, cardId, faceDown);
   }
-}
 
-/**
- * Initialize the game when the DOM is fully loaded
- */
+  /**
+   * Deals the initial cards to both player and dealer with animation
+   * @param {HTMLElement} playerContainer - The player's card container
+   * @param {HTMLElement} dealerContainer - The dealer's card container
+   * @returns {Promise<Object>} - Promise resolving to object with player and dealer cards
+   */
+  async function dealInitialCardsWithAnimation(playerContainer, dealerContainer) {
+    clearAllCards();
+
+    try {
+      const playerCard1 = await dealRandomCardToWithAnimation(playerContainer, false);
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      const playerCard2 = await dealRandomCardToWithAnimation(playerContainer, false);
+      updateScoreDisplay(
+        playerScoreDisplay,
+        calculateHandScore(playerContainer.querySelectorAll('playing-card'))
+      );
+      
+
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const dealerCard1 = await dealRandomCardToWithAnimation(dealerContainer, false);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const dealerCard2 = await dealRandomCardToWithAnimation(dealerContainer, true);
+
+      updateMessage("Your-turn - Hit or Stay?");
+
+      return {
+        player: [playerCard1, playerCard2],
+        dealer: [dealerCard1, dealerCard2]
+      };
+    } catch (error) {
+      return {
+        player: [],
+        dealer: []
+      };
+    }
+  }
+
+  /**
+   * Initialize the game when the DOM is fully loaded
+   */
 document.addEventListener('DOMContentLoaded', () => {
-  const playerArea = document.querySelector('#player-cards');
-  const dealerArea = document.querySelector('#dealer-cards');
-  const playerScore = document.querySelector('#player-score');
-  const dealerScore = document.querySelector('#dealer-score');
-  const messageArea = document.querySelector('#message-display');
-  const playerMoneyDisplay = document.querySelector('#player-money-display');
-  const currentBetDisplay = document.querySelector('#current-bet-display');
+    const playerArea = document.querySelector('#player-cards');
+    const dealerArea = document.querySelector('#dealer-cards');
+    const playerScore = document.querySelector('#player-score');
+    const dealerScore = document.querySelector('#dealer-score');
+    const messageArea = document.querySelector('#message-display');
+    const playerMoneyDisplay = document.querySelector('#player-money-display');
+    const currentBetDisplay = document.querySelector('#current-bet-display');
   
-  if (playerArea && dealerArea && playerScore && dealerScore && messageArea) {
-    initializeGame(playerArea, dealerArea, playerScore, dealerScore, messageArea, playerMoneyDisplay, currentBetDisplay);
-    setupGameEventListeners();
-  }
+    if (playerArea && dealerArea && playerScore && dealerScore && messageArea) {
+      initializeGame(playerArea, dealerArea, playerScore, dealerScore, messageArea, playerMoneyDisplay, currentBetDisplay);
+      setupGameEventListeners();
+    }
   
-  const originalSetGameState = setGameState;
-  setGameState = function(state) {
-    document.body.setAttribute('data-game-state', state);
-    return originalSetGameState(state);
-  };
-});
+    const originalSetGameState = setGameState;
+    setGameState = function (state) {
+      document.body.setAttribute('data-game-state', state);
+      return originalSetGameState(state);
+    };
+  })
+;

@@ -4,7 +4,15 @@
   padding: 0;
   box-sizing: border-box;
 }
-
+:root{
+  --card-width: 150px;
+  --card-height: 218px;
+  --card-gap: 10px;  
+}
+.playarea > playing-card {
+  flex: 0 0 var(--card-width);
+  pointer-events: auto;
+}
 body {
   background-color: #303b49;
   display: flex;
@@ -17,7 +25,8 @@ body {
   width: 100%;
   margin: auto;
   display: flex;
-  justify-content: row;  
+  justify-content: center;
+  flex-direction: row;  
 }
 
 .deck-container {
@@ -37,8 +46,7 @@ body {
 }
 
 .play-area-container {
-  height: 100%;
-  width: 50%;
+ text-align: center;
 }
 
 /* Dealer area styles */
@@ -63,19 +71,24 @@ body {
 
 /* Play area styles (formerly container-playarea) */
 .playarea {
-  display: flex;
+  display: inline-flex;
+  flex-wrap: nowrap;      
+  gap: var(--card-gap);
+  justify-content: center;
   align-items: center;
-  justify-content: flex-start;
   border: 7px dashed #21252e;
   border-radius: 10px;
   margin: 20px 0;
-  min-width: 740px;
-  min-height: 273px;
+  min-inline-size: calc(2 * var(--card-width) + var(--card-gap));
+  width:max-content;
+  max-width:none;
+min-height: calc(var(--card-height) + 20px);  
+overflow: visible;          
+padding:var(--card-gap);
+box-sizing: border-box;
+pointer-events: none;
 }
 
-.playarea > playing-card {
-  margin: 10px;
-}
 
 /* Controls container styles */
 .controls-container {
@@ -121,6 +134,11 @@ body {
 #player-cards playing-card:hover {
   transform: translateY(-10px);
 }
+/* Dealer cards should never flip on click */
+#dealer-cards playing-card {
+  pointer-events: none;   
+  cursor: default;        
+}
 
 /* Card reveal animation */
 @keyframes flip-reveal {
@@ -148,7 +166,67 @@ body {
     min-height: 800px;
   }
   
-  .playarea {
-    max-width: 500px;
+
+}
+/* ============  RESPONSIVE BREAKPOINTS  ============ */
+
+/* Tablets / small laptops */
+@media (max-width: 800px) {
+
+  /* Shrink every card & gap in one place */
+  :root {
+    --card-width: 100px;
+    --card-height: 145px;
+    --card-gap: 6px;
   }
+
+  /* Stack the three vertical panels */
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+    height: auto;              /* allow page to scroll if needed */
+  }
+
+  .deck-container,
+  .play-area-container,
+  .controls-container {
+    width: 100%;
+    height: auto;
+    margin-bottom: 12px;
+  }
+
+  /* Let cards wrap instead of forcing horizontal scroll */
+  .playarea {
+    flex-wrap: wrap;
+    justify-content: center;
+    min-width: unset;          /* drop the old 740 px floor */
+    min-height: calc(var(--card-height) + 40px);
+  }
+}
+
+/* Phones */
+@media (max-width: 480px) {
+
+  :root {
+    --card-width: 70px;
+    --card-height: 100px;
+    --card-gap: 4px;
+  }
+}
+
+/* ----------  AUTO‑SHRINK AS HAND GROWS  ---------- */
+/* 5–6 cards  → 120 × 175 */
+.playarea:has(> playing-card:nth-child(5)) {
+  --card-width: 120px;
+  --card-height: 175px;
+}
+/* 7–8 cards  → 100 × 145 */
+.playarea:has(> playing-card:nth-child(7)) {
+  --card-width: 100px;
+  --card-height: 145px;
+}
+/* 9 or more cards → 80 × 115 */
+.playarea:has(> playing-card:nth-child(9)) {
+  --card-width: 80px;
+  --card-height: 115px;
 }
