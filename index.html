@@ -10,14 +10,39 @@
   <script type="module" src="./components/card-deck/card-deck.js"></script>
   <script type="module" src="./components/custom-button/custom-button.js"></script>
   <script type="module" src="./components/custom-label/custom-label.js"></script>
+  <script type="module" src="./components/betting-panel/betting-panel.js"></script>
   <script src="./state/state.js"></script>
 </head>
 
 <body>
   <div class="game-container">
+    
     <div class="deck-container">
+
       <div class="deck-outline">
         <card-deck id="main-deck">
+      </div>
+
+      <betting-panel id="betting-panel">
+        <!-- Chip buttons with slot assignments -->
+        <custom-button bet-chip="5" slot="chip-5">$5</custom-button>
+        <custom-button bet-chip="10" slot="chip-10">$10</custom-button>
+        <custom-button bet-chip="25" slot="chip-25">$25</custom-button>
+        <custom-button bet-chip="100" slot="chip-100">$100</custom-button>
+        
+        <!-- Action buttons with slot assignments -->
+        <custom-button clear-bet slot="clear-bet">CLEAR BET</custom-button>
+        <custom-button bet-all-in slot="all-in">ALL IN</custom-button>
+      </betting-panel>
+      
+      <!-- Money and bet display section -->
+      <div class="money-display">
+        <custom-label>CASH:</custom-label>
+        <custom-label id="player-money-display">1000</custom-label>
+      </div>
+      <div class="bet-display">
+        <custom-label>BET:</custom-label>
+        <custom-label id="current-bet-display">0</custom-label>
       </div>
     </div>
 
@@ -40,30 +65,16 @@
     </div>
 
     <div class="controls-container">
-      <custom-label class="stats-label" id="message-display">Press DEAL to start</custom-label>
+      <custom-label class="stats-label" id="message-display">Place your bet and press DEAL to start</custom-label>      
+      
       <div class="controls">
-        <custom-button hit>HIT</custom-button>
-        <custom-button stay>STAY</custom-button>
+        <custom-button hit disabled>HIT</custom-button>
+        <custom-button stay disabled>STAY</custom-button>
         <custom-button deal>DEAL</custom-button>
       </div>
     </div>
   </div>
   
-  <script>
-    // Initialize game when DOM is fully loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      // Get DOM elements
-      const playerCards = document.getElementById('player-cards');
-      const dealerCards = document.getElementById('dealer-cards');
-      const playerScore = document.getElementById('player-score');
-      const dealerScore = document.getElementById('dealer-score');
-      const messageDisplay = document.getElementById('message-display');
-      
-      // Initialize the game
-      initializeGame(playerCards, dealerCards, playerScore, dealerScore, messageDisplay);
-      setupGameEventListeners();
-    });
-  </script>
 </body>
 
 </html>

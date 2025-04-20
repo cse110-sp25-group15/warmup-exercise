@@ -1,0 +1,17 @@
+.panel-container {
+    margin: 20px;
+}
+
+.span {
+    color:#dadada
+}
+
+.bet-buttons {
+    text-align: center;
+    margin: 15px 0;
+}
+
+.action-buttons {
+    text-align: center;
+    margin-top: 10px;
+}

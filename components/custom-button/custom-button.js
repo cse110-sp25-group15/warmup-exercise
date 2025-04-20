@@ -5,7 +5,7 @@ class CustomButton extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['disabled', 'hit', 'stay', 'deal'];
+    return ['disabled', 'hit', 'stay', 'deal', 'bet-chip', 'clear-bet', 'bet-all-in'];
   }
 
   async connectedCallback() {
@@ -26,6 +26,9 @@ class CustomButton extends HTMLElement {
 
     // Check if the disabled attribute is present and update the class accordingly
     this.updateDisabledState();
+    
+    // Update chip styling if applicable
+    this.updateChipStyling();
 
     // add event listener to button
     button.addEventListener('click', (event) => {
@@ -58,6 +61,32 @@ class CustomButton extends HTMLElement {
         });
         this.dispatchEvent(dealEvent);
       }
+      if (this.hasAttribute('bet-chip')) {
+        // create new event with chip value
+        const chipValue = this.getAttribute('bet-chip');
+        const betChipEvent = new CustomEvent('bet-chip', {
+          bubbles: true,
+          composed: true,
+          detail: { value: chipValue }
+        });
+        this.dispatchEvent(betChipEvent);
+      }
+      if (this.hasAttribute('clear-bet')) {
+        // create new event
+        const clearBetEvent = new CustomEvent('clear-bet', {
+          bubbles: true,
+          composed: true,
+        });
+        this.dispatchEvent(clearBetEvent);
+      }
+      if (this.hasAttribute('bet-all-in')) {
+        // create new event
+        const betAllInEvent = new CustomEvent('bet-all-in', {
+          bubbles: true,
+          composed: true,
+        });
+        this.dispatchEvent(betAllInEvent);
+      }
     });
   }
 
@@ -74,10 +103,26 @@ class CustomButton extends HTMLElement {
       button.removeAttribute('disabled');
     }
   }
+  
+  // Helper method to update chip styling
+  updateChipStyling() {
+    const button = this.shadowRoot?.querySelector('.custom-button');
+    if (!button) return;
+    
+    // Apply chip styling if bet-chip attribute exists
+    if (this.hasAttribute('bet-chip')) {
+      const chipValue = this.getAttribute('bet-chip');
+      button.classList.add('chip');
+      button.classList.add(`chip-${chipValue}`);
+    }
+  }
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'disabled') {
       this.updateDisabledState();
+    }
+    if (name === 'bet-chip') {
+      this.updateChipStyling();
     }
   }
 }

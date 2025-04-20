@@ -26,6 +26,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
 .deck-outline {
@@ -129,6 +130,16 @@ body {
   100% {
     transform: rotateY(180deg);
   }
+}
+
+.money-display {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.bet-display {
+  text-align: center;
+  margin: 10px 0;
 }
 
 /* Media Queries */

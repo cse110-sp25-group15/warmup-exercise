@@ -9,6 +9,7 @@
   font-size: 1rem;
   font-family: inherit;
   border: 3px solid white;
+  margin: 5px 0;
   /* round edges*/
   border-radius: 8px;
   transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.2s ease;
@@ -21,7 +22,6 @@
   cursor: url('../../assets/cursors/cursor.png'), pointer;
 }
 
-
 .custom-button:active {
   transform: scale(0.97);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
@@ -31,4 +31,32 @@
   opacity: 0.5;
   background-color: #7f8aa3; /* muted gray-blue */
   pointer-events: none;
+}
+
+/* Chip styling */
+.custom-button.chip {
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+  border-radius: 50%;
+  border: 3px dashed white;
+  padding: 0;
+  margin: 0 5px;
+}
+
+.custom-button.chip-5 {
+  background-color: red;
+}
+
+.custom-button.chip-10 {
+  background-color: blue;
+}
+
+.custom-button.chip-25 {
+  background-color: green;
+}
+
+.custom-button.chip-100 {
+  background-color: black;
+  color: gold;
 }
