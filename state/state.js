@@ -16,7 +16,15 @@ let currentBetDisplay = null;
  */
 function loadPlayerMoney() {
   
-  return 1000; // Default starting money
+  const savedMoney = localStorage.getItem('playerMoney');
+  
+  // If there's a saved value and it's a valid number, return it
+  if (savedMoney !== null && !isNaN(parseInt(savedMoney))) {
+    return parseInt(savedMoney);
+  }
+  
+  return 1000; // Default starting money if no saved value exists
+
 }
 
 /**
@@ -25,7 +33,9 @@ function loadPlayerMoney() {
  * @returns {boolean} - True if save was successful
  */
 function savePlayerMoney() {
-  
+  // save to local storage
+  localStorage.setItem('playerMoney', playerMoney);
+  return true;
 }
 
 /**
