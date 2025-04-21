@@ -159,6 +159,21 @@ pointer-events: none;
   text-align: center;
   margin: 10px 0;
 }
+#mute-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  color: white;
+  background: #000000aa;
+  border: 2px solid #ccc;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
 
 /* Media Queries */
 @media (min-width: 1200px) {
