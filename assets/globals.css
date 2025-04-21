@@ -91,6 +91,7 @@ pointer-events: none;
 }
 
 
+
 /* Controls container styles */
 .controls-container {
   height: 100%; 
@@ -229,6 +230,7 @@ pointer-events: none;
     --card-gap: 4px;
   }
 }
+
 
 /* ----------  AUTO‑SHRINK AS HAND GROWS  ---------- */
 /* 5–6 cards  → 120 × 175 */

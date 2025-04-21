@@ -17,7 +17,16 @@ class CustomButton extends HTMLElement {
 
     const template = document.createElement('template');
     template.innerHTML = `
-      <style>${css}</style>
+      <style>
+        ${css}
+        /* Add styles for slotted content */
+        ::slotted(img) {
+          width: 10%;
+          height: 10%;
+          object-fit: contain;
+          pointer-events: none;
+        }
+      </style>
       ${html}
     `;
     this.shadowRoot.appendChild(template.content.cloneNode(true));

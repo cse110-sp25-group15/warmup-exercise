@@ -18,7 +18,7 @@
 
 <body>
   <div class="game-container">
-    
+
     <div class="deck-container">
 
       <div class="deck-outline">
@@ -27,16 +27,29 @@
 
       <betting-panel id="betting-panel">
         <!-- Chip buttons with slot assignments -->
-        <custom-button bet-chip="5" slot="chip-5">$5</custom-button>
-        <custom-button bet-chip="10" slot="chip-10">$10</custom-button>
-        <custom-button bet-chip="25" slot="chip-25">$25</custom-button>
-        <custom-button bet-chip="100" slot="chip-100">$100</custom-button>
+        <custom-button class="chip chip-5" bet-chip="5" slot="chip-5">
+          <img src="assets/chips/5.png" alt="$5" />
+        </custom-button>
         
+        <custom-button class="chip chip-10" bet-chip="10" slot="chip-10">
+          <img src="assets/chips/10.png" alt="$10" />
+        </custom-button>
+        
+        <custom-button class="chip chip-25" bet-chip="25" slot="chip-25">
+          <img src="assets/chips/25.png" alt="$25" />
+        </custom-button>
+        
+        <custom-button class="chip chip-100" bet-chip="100" slot="chip-100">
+          <img src="assets/chips/100.png" alt="$100" />
+        </custom-button>
+        
+
+
         <!-- Action buttons with slot assignments -->
         <custom-button clear-bet slot="clear-bet">CLEAR BET</custom-button>
         <custom-button bet-all-in slot="all-in">ALL IN</custom-button>
       </betting-panel>
-      
+
       <!-- Money and bet display section -->
       <div class="money-display">
         <custom-label>CASH:</custom-label>
@@ -67,8 +80,8 @@
     </div>
 
     <div class="controls-container">
-      <custom-label class="stats-label" id="message-display">Place your bet and press DEAL to start</custom-label>      
-      
+      <custom-label class="stats-label" id="message-display">Place your bet and press DEAL to start</custom-label>
+
       <div class="controls">
         <custom-button hit disabled>HIT</custom-button>
         <custom-button stay disabled>STAY</custom-button>
@@ -79,9 +92,9 @@
 
   <audio id="bg-audio" src="assets/audio/casino-ambience.mp3" autoplay loop muted></audio>
 
-<button id="mute-btn" aria-label="Toggle music">🔇</button>
+  <button id="mute-btn" aria-label="Toggle music">🔇</button>
 
-  
+
 </body>
 
 </html>
